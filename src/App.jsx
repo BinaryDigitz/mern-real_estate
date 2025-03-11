@@ -1,6 +1,7 @@
 import React from 'react'
 import { Routes, Route } from 'react-router-dom'
 import { Home, Login, About, SignUp, Profile, Header } from './index'
+import { ToastContainer } from 'react-toastify'
 
 function App() {
   return (
@@ -9,6 +10,7 @@ function App() {
          <Header />
       </header>
       <main>
+        <ToastContainer />
         <Routes>
           <Route path='/' element={ <Home />} />
           <Route path='/login' element={ <Login />} />
