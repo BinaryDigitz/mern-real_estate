@@ -1,11 +1,12 @@
 import React from 'react'
-import { Home, Login, About, SignUp, Profile } from './index'
+import { Routes, Route } from 'react-router-dom'
+import { Home, Login, About, SignUp, Profile, Header } from './index'
 
 function App() {
   return (
     <div>
       <header>
-        header
+         <Header />
       </header>
       <main>
         <Routes>

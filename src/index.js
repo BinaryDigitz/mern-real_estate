@@ -9,6 +9,6 @@ export { default as Profile } from './pages/Profile'
 
 
 // UI
-
+export { default as Header } from './components/Header'
 
 // UX
