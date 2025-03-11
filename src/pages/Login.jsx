@@ -1,44 +1,50 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { Link, useNavigate} from 'react-router-dom'
 import { toast } from 'react-toastify'
+import { useDispatch, useSelector } from 'react-redux'
+import { signInFailure, signInStart, signInSuccess } from '../redux/user'
+
+import AppContext from '../context/AppContext'
 
 function SignUp() {
+  const dispatch = useDispatch()
   const navigate = useNavigate()
-  const [ error, setError ] = useState('')
-  const [ isLoading, setIstLoading] = useState(false)
+  const { setIsLoggedIn, setUserData } = useContext(AppContext)
+  const { loading, error } = useSelector( state => state.user)
  const [ formData, setFormData ] = useState({ email:'', password: ''})
   function handleChange(event){
     setFormData({...formData, [event.target.id]: event.target.value })
   }
   async function handleSubmit(event){
     event.preventDefault()
-    setIstLoading(true)
+    dispatch(signInStart())
     try{
       const response = await fetch('/api/auth/login',{
         method: 'POST',
         headers: { 'Content-Type': 'Application/json'},
         body: JSON.stringify(formData)
       })
-      const { success, message} = await response.json()
+      const {user, success, message} = await response.json()
       
       if(!success) {
         toast.error(message)
-        setError(message)
-        setIstLoading(false)
+        dispatch(signInFailure(message))
         setFormData({...formData, email: ''})
         setFormData({...formData, password: ''})
         return ;
       }
       toast.success(message)
-      setIstLoading(false)
+      dispatch(signInSuccess(user))
+      setUserData(user)
+      setIsLoggedIn(true)
+      setUserData('')
       setFormData({...formData, email: ''})
       setFormData({...formData, password: ''})
       navigate('/')
       return ;
     }
     catch(ex){
-      setIstLoading(false)
-      setError(ex.message)
+     dispatch(signInFailure(ex.message))
     }
   }
   return (
@@ -49,8 +55,8 @@ function SignUp() {
         <input value={formData.email} onChange={event => handleChange(event)} type="email" required autoComplete='email' className="border p-3 rounded-full px-4" id='email' placeholder='Email'/>
         <input value={formData.password} onChange={event => handleChange(event)} type="password" required autoComplete='password' className="border p-3 rounded-full px-4" id='password' placeholder='Password'/>
 
-        <button disabled={isLoading} type='submit' className='bg-slate-700 my-3 cursor-pointer text-white p-3 rounded-full uppercase hover:opacity-95 disabled:opacity-70 trans'>{
-          isLoading? 'Loading....' : 'Login'
+        <button disabled={loading} type='submit' className='bg-slate-700 my-3 cursor-pointer text-white p-3 rounded-full uppercase hover:opacity-95 disabled:opacity-70 trans'>{
+          loading? 'Loading....' : 'Login'
           }</button>
       </form>
       <p className='flex justify-between p-2 text-sm'>
